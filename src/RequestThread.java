@@ -136,7 +136,7 @@ public class RequestThread extends Thread {
                     String show = new String("");
                     boolean suc = Server.db.auth(secondSplit[0],secondSplit[1]);
                     if (suc){
-                        show = Server.db.show();
+                        //show = Server.db.show();
                     }
                     if (!show.isEmpty()){
                         Orders.send(show, request);
