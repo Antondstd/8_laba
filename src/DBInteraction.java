@@ -201,6 +201,7 @@ public class DBInteraction {
             HumanHandler hh = new HumanHandler();
             while (result.next()) {
                 hh.id = result.getInt("id");
+                hh.user = result.getString("login");
                 hh.key = result.getString("key");
                 human.setName(result.getString("name"));
                 human.setX(result.getInt("x"));

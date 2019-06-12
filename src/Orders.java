@@ -2,10 +2,7 @@ import com.google.gson.Gson;
 
 import java.io.*;
 import java.net.DatagramPacket;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
 import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -247,6 +244,28 @@ public class Orders {
             out.close();
             buffer = by.toByteArray();
         DatagramPacket response = new DatagramPacket(buffer, buffer.length, request.getAddress(), request.getPort());
+
+            Server.socket.send(response);
+        }
+        catch (IOException o){
+            System.out.println(o);
+        }
+        sout = "";
+
+    }
+    public static void send(String mes, DatagramPacket request, List<HumanHandler> a){
+        Sendi sendi = new Sendi();
+        sendi.fromServer = mes;
+        sendi.humanList = a;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+            buffer = by.toByteArray();
+            DatagramPacket response = new DatagramPacket(buffer, buffer.length, request.getAddress(), request.getPort());
 
             Server.socket.send(response);
         }

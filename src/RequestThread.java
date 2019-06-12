@@ -9,6 +9,8 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RequestThread extends Thread {
@@ -126,6 +128,7 @@ public class RequestThread extends Thread {
             }
             break;
             case ("show"): {
+                List<HumanHandler> a = new ArrayList<HumanHandler>();
 //                if (!(Server.collection.isEmpty())) Orders.show(Server.collection, request);
 //                else{
 //                    String sout = new String("Коллекция пуста");
@@ -136,10 +139,10 @@ public class RequestThread extends Thread {
                     String show = new String("");
                     boolean suc = Server.db.auth(secondSplit[0],secondSplit[1]);
                     if (suc){
-                        //show = Server.db.show();
+                        a = Server.db.show();
                     }
                     if (!show.isEmpty()){
-                        Orders.send(show, request);
+                        Orders.send(show, request, a);
                     }
                     else{
                         Orders.send("Не удалось извлечь данные", request);
