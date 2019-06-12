@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javax.mail.*;
@@ -300,8 +301,8 @@ public class Client {
         }
     }
 
-    public List<Human> show(String email, String password){
-        List<Human> a = new List<Human>;
+    public List<HumanHandler> show(String email, String password){
+        List<HumanHandler> a = new ArrayList<HumanHandler>();
         String result = "show " + email + " " + password;
         System.out.println(result);
         Sendi sendi = new Sendi();

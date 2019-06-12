@@ -6,18 +6,16 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBInteraction {
     public static String createUserBd = new String("Create TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY,login TEXT NOT NULL UNIQUE, password TEXT NOT NULL)");
-    public static String createObjectsBd = new String("Create TABLE IF NOT EXISTS objects(id SERIAL PRIMARY KEY," +
+    public static String createObjectsBd = new String("Create TABLE IF NOT EXISTS humans(id SERIAL PRIMARY KEY," +
             "login TEXT NOT NULL," +
             "key TEXT NOT NULL," +
             "name TEXT NOT NULL," +
-            "gender TEXT NOT NULL," +
-            "boots TEXT NOT NULL," +
-            "flyingType BOOLEAN NOT NULL," +
-            "state TEXT NOT NULL," +
-            "standsOn TEXT NOT NULL," +
+            "weight int4," +
             "x int4," +
             "y int4," +
             "appearedDate int4)");
@@ -120,18 +118,26 @@ public class DBInteraction {
             Human human = gson.fromJson(splitHuman[1], Human.class);
             human.setDate();
 
-            PreparedStatement statement = con.prepareStatement("INSERT INTO objects (login, key, name, gender, boots, flyingType, state, standsOn, x, y, appearedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//            PreparedStatement statement = con.prepareStatement("INSERT INTO objects (login, key, name, gender, boots, flyingType, state, standsOn, x, y, appearedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+//            statement.setString(1, email);
+//            statement.setString(2, splitHuman[0]);
+//            statement.setString(3, human.getName());
+//            statement.setString(4, human.getGender().toString());
+//            statement.setString(5, human.getShoes());
+//            statement.setBoolean(6, human.getFlyingType());
+//            statement.setString(7, human.getState());
+//            statement.setString(8, human.getStandOn());
+//            statement.setInt(9, human.getX());
+//            statement.setInt(10, human.getY());
+//            statement.setInt(11, (int)human.getAppeared());
+            PreparedStatement statement = con.prepareStatement("INSERT INTO humans (login, key, name, weight, x, y, appearedDate) VALUES (?, ?, ?, ?, ?, ?, ?)");
             statement.setString(1, email);
             statement.setString(2, splitHuman[0]);
             statement.setString(3, human.getName());
-            statement.setString(4, human.getGender().toString());
-            statement.setString(5, human.getShoes());
-            statement.setBoolean(6, human.getFlyingType());
-            statement.setString(7, human.getState());
-            statement.setString(8, human.getStandOn());
-            statement.setInt(9, human.getX());
-            statement.setInt(10, human.getY());
-            statement.setInt(11, (int)human.getAppeared());
+            statement.setInt(4, human.getWeight());
+            statement.setInt(5, human.getX());
+            statement.setInt(6, human.getY());
+            statement.setInt(7, (int)human.getAppeared());
             statement.execute();
 
             succsess = true;
@@ -141,8 +147,6 @@ public class DBInteraction {
         }
         catch(JsonSyntaxException mes){
             System.out.println("Неверный формат данных");
-        }
-        catch (NoGenderException e){
         }
         catch (Exception e){
             e.printStackTrace();
@@ -184,39 +188,40 @@ public class DBInteraction {
         return succsess;
     }
 
-    public String show() {
+    public List<HumanHandler> show() {
         String showString = "";
         String key = "";
+        List<HumanHandler> a = new ArrayList<HumanHandler>();
 
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM objects;");
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM humans;");
             ResultSet result = statement.executeQuery();
 
             Human human = new Human();
+            HumanHandler hh = new HumanHandler();
             while (result.next()) {
-                key = result.getString("key");
+                hh.id = result.getInt("id");
+                hh.key = result.getString("key");
                 human.setName(result.getString("name"));
                 human.setX(result.getInt("x"));
                 human.setY(result.getInt("y"));
-                human.setGender(result.getString("gender"));
-                human.setState(result.getString("state"));
-                human.setFlyingType(result.getBoolean("flyingtype"));
-                human.setStandOn(result.getString("standson"));
+                human.setWeight(result.getInt("weight"));
                 human.appeared = OffsetDateTime.ofInstant(Instant.ofEpochSecond(result.getInt("appeareddate")), ZoneId.systemDefault());
-
-                showString += "Ключ: " + key + " ---- " + human.toString() + "\n";
+                hh.h = human;
+                a.add(hh);
+                //showString += "ID: " + id + " Ключ: " + key + " ---- " + human.toString() + "\n";
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return showString;
+        return a;
     }
 
     public int info() {
         int count = 0;
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM objects;");
+            PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM humans;");
             ResultSet result = statement.executeQuery();
             if (result.next()) {
                 count = result.getInt(1);
@@ -227,29 +232,13 @@ public class DBInteraction {
 
         return count;
     }
-    public boolean remove(String email, String password, String stHuman){
+    public boolean remove(String email, String password, String id){
         boolean succsess = false;
-        String[] splitHuman = stHuman.split("[}]\\s*", 2);
-        splitHuman[0]= splitHuman[0].concat("}");
         try {
-            splitHuman[0] = gson.fromJson(splitHuman[0],Key.class).toString();
-            if (splitHuman[0] == null){
-                throw new JsonSyntaxException("");
-            }
-            Human human = gson.fromJson(splitHuman[1], Human.class);
-            human.setDate();
-            System.out.println("gG");
-            PreparedStatement statement = con.prepareStatement("DELETE FROM objects WHERE (login, key, name, gender, boots, flyingType, state, standsOn, x, y) = (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+            PreparedStatement statement = con.prepareStatement("DELETE FROM humans WHERE (login, id) = (?, ?);");
             statement.setString(1, email);
-            statement.setString(2, splitHuman[0]);
-            statement.setString(3, human.getName());
-            statement.setString(4, human.getGender().toString());
-            statement.setString(5, human.getShoes());
-            statement.setBoolean(6, human.getFlyingType());
-            statement.setString(7, human.getState());
-            statement.setString(8, human.getStandOn());
-            statement.setInt(9, human.getX());
-            statement.setInt(10, human.getY());
+            statement.setInt(2, Integer.parseInt(id));
             statement.execute();
 
             succsess = true;
@@ -260,9 +249,7 @@ public class DBInteraction {
         catch(JsonSyntaxException mes){
             System.out.println("Неверный формат данных");
         }
-        catch (NoGenderException e){
-            e.printStackTrace();
-        }
+
         catch (Exception e){
             e.printStackTrace();
         }
@@ -278,14 +265,15 @@ public class DBInteraction {
                 throw new JsonSyntaxException("");
             }
             String key = splitHuman[0];
+            System.out.println(key);
             Human human = gson.fromJson(splitHuman[1], Human.class);
 
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM objects WHERE login = ?");
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM humans WHERE login = ?");
             statement.setString(1, email);
 
             ResultSet result = statement.executeQuery();
 
-            statement = con.prepareStatement("DELETE FROM objects WHERE id = ?");
+            statement = con.prepareStatement("DELETE FROM humans WHERE id = ?");
 
             while (result.next()) {
                 System.out.println(result.getString("key"));

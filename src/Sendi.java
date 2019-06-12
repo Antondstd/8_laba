@@ -8,6 +8,6 @@ public class Sendi implements Serializable {
     String fromServer;
     String fromClient;
     String code;
-    List<Human> humanList;
+    List<HumanHandler> humanList;
     int iteration;
 }

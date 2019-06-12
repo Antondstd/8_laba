@@ -131,7 +131,7 @@ public class Human extends aCreature implements Comparable<Human>{
 
     @Override
     public String toString(){
-        String info = "Имя: " + this.name + " Пол: " + this.gender + " Возможность летать: " + this.flyingType + " Ботинки: " + this.boots + " Локация: " + this.standOn + " Дата появления: " + this.appeared;
+        String info = "Имя: " + this.name + " Weight:" + this.weight + " X: " + this.x + " Y: " + y + " Дата появления: " + this.appeared;
         return info;
     }
 
@@ -140,6 +140,10 @@ public class Human extends aCreature implements Comparable<Human>{
     }
     public long getAppeared() {
         return (long)appeared.toEpochSecond();
+    }
+
+    public int getWeight(){
+        return this.weight;
     }
 
     public int getX(){
@@ -191,6 +195,9 @@ public class Human extends aCreature implements Comparable<Human>{
     }
     public void setY(int y){
         this.y = y;
+    }
+    public void setWeight(int weight){
+        this.weight = weight;
     }
     public void setName(String name){
         this.name = name;
