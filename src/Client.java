@@ -7,6 +7,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import com.google.gson.Gson;
+
+import java.util.List;
 import java.util.Scanner;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -131,8 +133,13 @@ public class Client {
 
                     try {
                         socket.receive(response);
-                        String quote = new String(bufferResponce, 0, response.getLength());
-                        System.out.println(quote);
+                        ObjectInput in = null;
+                        Sendi sendiReceive;
+                        ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+                        in = new ObjectInputStream(bis);
+                        sendiReceive = (Sendi) in.readObject();
+                        System.out.println(sendiReceive.fromServer);
                     }
                     catch (SocketTimeoutException e) {
                         // timeout exception.
@@ -143,6 +150,191 @@ public class Client {
             }while(!line.equalsIgnoreCase("exit"));
         }catch (Exception o){
 
+        }
+    }
+    public String add(String key ,String name, int weight, int x, int y, String email, String password){
+        String result = "insert " + email + " " + password + " {\"key\":\""+ key + "\"}  {\"name\":\"" + name + "\",\"weight\":" + weight + ",\"x\":\"" + x + "\",\"y\":\"" + y + "\"}";
+        System.out.println(result);
+        Sendi sendi = new Sendi();
+        sendi.fromClient = result;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] buffer = new byte[3000];
+        byte[] bufferResponce = new byte[3000];
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+
+        buffer = by.toByteArray();
+        DatagramPacket sending = new DatagramPacket(buffer,buffer.length,Settings.address,Settings.port);
+        DatagramPacket response = new DatagramPacket(bufferResponce, bufferResponce.length);
+        Settings.socket.send(sending);
+        Settings.socket.setSoTimeout(3000);
+            ObjectInput in = null;
+            Sendi sendiReceive;
+            ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+            in = new ObjectInputStream(bis);
+            sendiReceive = (Sendi) in.readObject();
+            return sendiReceive.fromServer;
+        }
+        catch (SocketTimeoutException e) {
+            // timeout exception.
+            return ("Ответ от сервера не получен");
+        }
+        catch (Exception e) {
+            return ("Ошибка");
+        }
+    }
+
+    public String remove(int id, String email, String password){
+        String result = "remove " + email + " " + password + " " + id;
+        System.out.println(result);
+        Sendi sendi = new Sendi();
+        sendi.fromClient = result;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] buffer = new byte[3000];
+        byte[] bufferResponce = new byte[3000];
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+
+            buffer = by.toByteArray();
+            DatagramPacket sending = new DatagramPacket(buffer,buffer.length,Settings.address,Settings.port);
+            DatagramPacket response = new DatagramPacket(bufferResponce, bufferResponce.length);
+            Settings.socket.send(sending);
+            Settings.socket.setSoTimeout(3000);
+            ObjectInput in = null;
+            Sendi sendiReceive;
+            ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+            in = new ObjectInputStream(bis);
+            sendiReceive = (Sendi) in.readObject();
+            return sendiReceive.fromServer;
+        }
+        catch (SocketTimeoutException e) {
+            // timeout exception.
+            return ("Ответ от сервера не получен");
+        }
+        catch (Exception e) {
+            return ("Ошибка");
+        }
+    }
+
+    public String info(String email, String password){
+        String result = "info " + email + " " + password;
+        System.out.println(result);
+        Sendi sendi = new Sendi();
+        sendi.fromClient = result;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] buffer = new byte[3000];
+        byte[] bufferResponce = new byte[3000];
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+
+            buffer = by.toByteArray();
+            DatagramPacket sending = new DatagramPacket(buffer,buffer.length,Settings.address,Settings.port);
+            DatagramPacket response = new DatagramPacket(bufferResponce, bufferResponce.length);
+            Settings.socket.send(sending);
+            Settings.socket.setSoTimeout(3000);
+            ObjectInput in = null;
+            Sendi sendiReceive;
+            ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+            in = new ObjectInputStream(bis);
+            sendiReceive = (Sendi) in.readObject();
+            return sendiReceive.fromServer;
+        }
+        catch (SocketTimeoutException e) {
+            // timeout exception.
+            return ("Ответ от сервера не получен");
+        }
+        catch (Exception e) {
+            return ("Ошибка");
+        }
+    }
+
+    public String removeGreater(String key, String email, String password){
+        String result = "remove_greater_key " + email + " " + password + " {\"key\":\"" + key + "\"}";
+        System.out.println(result);
+        Sendi sendi = new Sendi();
+        sendi.fromClient = result;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] buffer = new byte[3000];
+        byte[] bufferResponce = new byte[3000];
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+
+            buffer = by.toByteArray();
+            DatagramPacket sending = new DatagramPacket(buffer,buffer.length,Settings.address,Settings.port);
+            DatagramPacket response = new DatagramPacket(bufferResponce, bufferResponce.length);
+            Settings.socket.send(sending);
+            Settings.socket.setSoTimeout(3000);
+            ObjectInput in = null;
+            Sendi sendiReceive;
+            ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+            in = new ObjectInputStream(bis);
+            sendiReceive = (Sendi) in.readObject();
+            return sendiReceive.fromServer;
+        }
+        catch (SocketTimeoutException e) {
+            // timeout exception.
+            return ("Ответ от сервера не получен");
+        }
+        catch (Exception e) {
+            return ("Ошибка");
+        }
+    }
+
+    public List<Human> show(String email, String password){
+        List<Human> a = new List<Human>;
+        String result = "show " + email + " " + password;
+        System.out.println(result);
+        Sendi sendi = new Sendi();
+        sendi.fromClient = result;
+        ByteArrayOutputStream by = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        byte[] buffer = new byte[3000];
+        byte[] bufferResponce = new byte[3000];
+        try {
+            out = new ObjectOutputStream(by);
+            out.writeObject(sendi);
+            out.flush();
+            out.close();
+
+            buffer = by.toByteArray();
+            DatagramPacket sending = new DatagramPacket(buffer,buffer.length,Settings.address,Settings.port);
+            DatagramPacket response = new DatagramPacket(bufferResponce, bufferResponce.length);
+            Settings.socket.send(sending);
+            Settings.socket.setSoTimeout(3000);
+            ObjectInput in = null;
+            Sendi sendiReceive;
+            ByteArrayInputStream bis = new ByteArrayInputStream(bufferResponce);
+
+            in = new ObjectInputStream(bis);
+            sendiReceive = (Sendi) in.readObject();
+            return sendiReceive.humanList;
+        }
+        catch (SocketTimeoutException e) {
+            // timeout exception.
+            return a;
+        }
+        catch (Exception e) {
+            return a;
         }
     }
 }
